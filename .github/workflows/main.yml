@@ -54,7 +54,7 @@ jobs:
     - name: "Build zlib"
       run: |
         # Tải zlib
-        curl -LO https://zlib.net/zlib1211.zip
+        curl -LO https://zlib.net/zlib131.zip
         # Giải nén zlib
         7z x zlib1211.zip -o"zlib-1.2.11"
         # Tạo thư mục build

@@ -53,12 +53,18 @@ jobs:
 
     - name: "Build zlib"
       run: |
+        # Tải zlib
         curl -LO https://zlib.net/zlib1211.zip
-        tar -xf zlib1211.zip
-        cmake -S zlib-1.2.11 -B zlib-build -G "Ninja" ^
-          -DCMAKE_BUILD_TYPE=Release ^
-          -DCMAKE_INSTALL_PREFIX=D:/libs/zlib
-        cmake --build zlib-build --target install
+        # Giải nén zlib
+        7z x zlib1211.zip -o"zlib-1.2.11"
+        # Tạo thư mục build
+        cmake -S zlib-1.2.11 -B build/zlib -G "Ninja" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/build/zlib-install
+        # Biên dịch và cài đặt
+        cmake --build build/zlib --target install
+
+
 
     - name: "Dependency: Prebuilt OBS Studio Dependencies (Cache)"
       id: obsdeps-cache

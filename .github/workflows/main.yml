@@ -46,7 +46,27 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0
+    - name: "Gather Information"
+      id: info
+      shell: bash
+      run: |
+        # Define buildspec file
+        buildspec="${{ github.workspace }}/third-party/obs-studio/buildspec.json"
 
+        # Prebuilt Dependencies Version
+        IFS=$'\n' buildspecdata=($(node tools/buildspec.js "${buildspec}" "prebuilt" "windows-x64"))
+        echo "obs_deps_version=${buildspecdata[0]}" >> "$GITHUB_ENV"
+        echo "obs_deps_hash=${buildspecdata[1]}" >> "$GITHUB_ENV"
+        echo "obs_deps_url=${buildspecdata[2]}" >> "$GITHUB_ENV"
+
+        # Qt Version
+        IFS=$'\n' buildspecdata=($(node tools/buildspec.js "${buildspec}" "qt${{ matrix.qt }}" "windows-x64"))
+        echo "qt_version=${buildspecdata[0]}" >> "$GITHUB_ENV"
+        echo "qt_hash=${buildspecdata[1]}" >> "$GITHUB_ENV"
+        echo "qt_url=${buildspecdata[2]}" >> "$GITHUB_ENV"
+
+        # libOBS Version
+        echo "obs_version=$(cd "${{ github.workspace }}/third-party/obs-studio" && git describe --tags --long)" >> "$GITHUB_ENV"
     - name: "Install Dependencies"
       run: |
         choco install cmake ninja 7zip --no-progress

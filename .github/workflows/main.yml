@@ -67,6 +67,14 @@ jobs:
 
         # libOBS Version
         echo "obs_version=$(cd "${{ github.workspace }}/third-party/obs-studio" && git describe --tags --long)" >> "$GITHUB_ENV"
+    - name: "Check obs_deps_url"
+      run: |
+        if [ -z "${{ env.obs_deps_url }}" ]; then
+          echo "Error: obs_deps_url is not set."
+          exit 1
+        else
+          echo "obs_deps_url is set to: ${{ env.obs_deps_url }}"
+        fi
     - name: "Install Dependencies"
       run: |
         choco install cmake ninja 7zip --no-progress

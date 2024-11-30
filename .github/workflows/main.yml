@@ -56,9 +56,9 @@ jobs:
         # Tải zlib
         curl -LO https://zlib.net/zlib131.zip
         # Giải nén zlib
-        7z x zlib1211.zip -o"zlib-1.2.11"
+        7z x zlib131.zip -o"zlib-1.3.1"
         # Tạo thư mục build
-        cmake -S zlib-1.2.11 -B build/zlib -G "Ninja" \
+        cmake -S zlib-1.3.1 -B build/zlib -G "Ninja" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/build/zlib-install
         # Biên dịch và cài đặt

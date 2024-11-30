@@ -103,16 +103,19 @@ jobs:
         if [[ ! -f "${{ github.workspace }}/build/obsdeps" ]]; then mkdir -p "${{ github.workspace }}/build/obsdeps"; fi
         7z x -y -o"${{ github.workspace }}/build/obsdeps" -- "/tmp/obsdeps.zip"
 
-    - name: "Configure OBS Studio"
+    - name: "Configure"
+      continue-on-error: true
+      shell: bash
       run: |
-        cmake -S third-party/obs-studio -B build/obs ^
-          -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/build/obs/install" ^
-          -DCMAKE_PREFIX_PATH="${{ github.workspace }}/build/obsdeps;D:/libs/zlib" ^
-          -DZLIB_INCLUDE_DIR=D:/libs/zlib/include ^
-          -DZLIB_LIBRARY=D:/libs/zlib/lib/zlib.lib ^
-          -DENABLE_PLUGINS=OFF ^
-          -DENABLE_UI=OFF ^
-          -DENABLE_SCRIPTING=OFF
+        cmake \
+          -S "${{ github.workspace }}" \
+          -B "${{ github.workspace }}/build/ci" \
+          -DCMAKE_SYSTEM_VERSION="${{ env.CMAKE_SYSTEM_VERSION }}" \
+          -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \
+          -Dlibobs_DIR="${{ github.workspace }}/build/obs/install" \
+          -DQt${{ matrix.qt }}_DIR="${{ github.workspace }}/build/qt" \
+          -DFFmpeg_DIR="${{ github.workspace }}/build/obsdeps" \
+          -DCURL_DIR="${{ github.workspace }}/build/obsdeps"
 
     - name: "Build OBS Studio"
       run: |

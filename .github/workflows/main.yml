@@ -67,14 +67,7 @@ jobs:
 
         # libOBS Version
         echo "obs_version=$(cd "${{ github.workspace }}/third-party/obs-studio" && git describe --tags --long)" >> "$GITHUB_ENV"
-    - name: "Check obs_deps_url"
-      run: |
-        if [ -z "${{ env.obs_deps_url }}" ]; then
-          echo "Error: obs_deps_url is not set."
-          exit 1
-        else
-          echo "obs_deps_url is set to: ${{ env.obs_deps_url }}"
-        fi
+
     - name: "Install Dependencies"
       run: |
         choco install cmake ninja 7zip --no-progress
@@ -102,11 +95,13 @@ jobs:
         key: "obsdeps-${{ env.CACHE_VERSION }}"
 
     - name: "Dependency: Prebuilt OBS Studio Dependencies"
+      id: obsdeps
       if: ${{ steps.obsdeps-cache.outputs.cache-hit != 'true' }}
+      shell: bash
       run: |
         curl --retry 5 --retry-delay 30 -jLo /tmp/obsdeps.zip "${{ env.obs_deps_url }}"
-        mkdir -p "${{ github.workspace }}/build/obsdeps"
-        7z x -y -o"${{ github.workspace }}/build/obsdeps" /tmp/obsdeps.zip
+        if [[ ! -f "${{ github.workspace }}/build/obsdeps" ]]; then mkdir -p "${{ github.workspace }}/build/obsdeps"; fi
+        7z x -y -o"${{ github.workspace }}/build/obsdeps" -- "/tmp/obsdeps.zip"
 
     - name: "Configure OBS Studio"
       run: |
